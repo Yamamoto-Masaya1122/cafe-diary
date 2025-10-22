@@ -1,0 +1,55 @@
+import type { CafeDiaryData } from "@/types/cafe-diary";
+
+// カフェ日記のモックデータ
+export const mockCafeDiaryData: CafeDiaryData[] = [
+  {
+    id: 1,
+    name: "カフェ1",
+    title: "日記1",
+    content: "日記1の内容",
+    location: "東京都千代田区永田町1-7-1",
+    notes: "日記1の内容",
+    rating: 5,
+    visit_date: "2025-01-01",
+  },
+  {
+    id: 2,
+    name: "カフェ2",
+    title: "日記2",
+    content: "日記2の内容",
+    location: "東京都千代田区永田町1-7-1",
+    notes: "日記2の内容",
+    rating: 4,
+    visit_date: "2025-01-02",
+  },
+  {
+    id: 3,
+    name: "カフェ3",
+    title: "日記3",
+    content: "日記3の内容",
+    location: "東京都千代田区永田町1-7-1",
+    notes: "日記3の内容",
+    rating: 3,
+    visit_date: "2025-01-03",
+  },
+  {
+    id: 4,
+    name: "カフェ4",
+    title: "日記4",
+    content: "日記4の内容",
+    location: "東京都千代田区永田町1-7-1",
+    notes: "日記4の内容",
+    rating: 2,
+    visit_date: "2025-01-04",
+  },
+  {
+    id: 5,
+    name: "カフェ5",
+    title: "日記5",
+    content: "日記5の内容",
+    location: "東京都千代田区永田町1-7-1",
+    notes: "日記5の内容",
+    rating: 1,
+    visit_date: "2025-01-05",
+  },
+];
