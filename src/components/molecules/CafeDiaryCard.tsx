@@ -1,12 +1,6 @@
 import React from "react";
 import { MapPin, Star, Calendar } from "lucide-react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardAction,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 interface CafeDiaryCardProps {
   id: number;
@@ -45,24 +39,20 @@ export const CafeDiaryCard: React.FC<CafeDiaryCardProps> = ({
     >
       <CardHeader>
         <CardTitle className="text-xl text-amber-900">{name}</CardTitle>
-        <CardAction>
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`w-4 h-4 ${
-                  i < rating
-                    ? "fill-amber-400 text-amber-400"
-                    : "text-amber-200"
-                }`}
-              />
-            ))}
-          </div>
-        </CardAction>
       </CardHeader>
 
       <CardContent>
-        <div className="flex flex-wrap gap-3 text-sm text-amber-700">
+        <div className="flex items-center gap-1">
+          {[...Array(5)].map((_, i) => (
+            <Star
+              key={i}
+              className={`w-4 h-4 ${
+                i < rating ? "fill-amber-400 text-amber-400" : "text-amber-200"
+              }`}
+            />
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-3 text-sm mt-3 text-amber-700">
           {location && (
             <div className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
@@ -74,9 +64,8 @@ export const CafeDiaryCard: React.FC<CafeDiaryCardProps> = ({
             <span>{formatDate(visit_date)}</span>
           </div>
         </div>
-
         {notes && (
-          <p className="mt-3 text-amber-600 text-sm line-clamp-2">{notes}</p>
+          <p className="mt-3 text-amber-600 text-sm line-clamp-1">{notes}</p>
         )}
       </CardContent>
     </Card>

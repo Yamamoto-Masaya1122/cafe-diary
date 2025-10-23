@@ -8,7 +8,8 @@ export const mockCafeDiaryData: CafeDiaryData[] = [
     title: "日記1",
     content: "日記1の内容",
     location: "東京都千代田区永田町1-7-1",
-    notes: "日記1の内容",
+    notes:
+      "店内はゆったりとしていて、気持ちがリラックスします。ティラミスが美味しかったです。マスターが優しくて、よく話してくれました。",
     rating: 5,
     visit_date: "2025-01-01",
   },
