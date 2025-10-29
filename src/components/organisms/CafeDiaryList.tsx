@@ -1,15 +1,18 @@
 "use client";
 
-import React from "react";
-import { Coffee, Plus, LogOut } from "lucide-react";
+import React, { useState } from "react";
+import { Coffee, Plus } from "lucide-react";
 import { CafeDiaryCard } from "@/components/molecules/CafeDiaryCard";
 import { mockCafeDiaryData } from "@/mocks/cafe-diary-data";
 import { CreateCafeDiaryFloatingButton } from "@/components/atoms/CafeDiaryFloatingButton";
 import { Button } from "@/components/atoms/Button";
+import CafeDiaryForm from "@/components/organisms/CafeDiaryForm";
+import { CafeDiaryData } from "@/types/cafe-diary";
 
 const CafeDiaryList = () => {
   // モックデータ
-  const cafeDiaries = mockCafeDiaryData;
+  const [cafeDiaries, setCafeDiaries] = useState(mockCafeDiaryData);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleCardClick = (id: number) => {
     console.log(`Cafe ${id} clicked`);
@@ -17,12 +20,17 @@ const CafeDiaryList = () => {
   };
 
   const handleCreateDiary = () => {
-    console.log("Create diary");
-    // ここに詳細ページへの遷移などを実装
+    setIsFormOpen(true);
+  };
+
+  const handleFormSubmit = (data: CafeDiaryData) => {
+    // 新しいカフェ日記をリストに追加
+    setCafeDiaries((prev) => [data, ...prev]);
+    setIsFormOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+    <div className="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-rose-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-3">
@@ -44,7 +52,7 @@ const CafeDiaryList = () => {
               <Button
                 onClick={handleCreateDiary}
                 icon={Plus}
-                className="bg-gradient-to-r from-amber-400 to-orange-500 text-white px-6 py-3 font-medium hover:from-amber-500 hover:to-orange-600 transition-all shadow-md hover:shadow-lg"
+                className="bg-linear-to-r from-amber-400 to-orange-500 text-white px-6 py-3 font-medium hover:from-amber-500 hover:to-orange-600 transition-all shadow-md hover:shadow-lg"
               >
                 カフェ日記を追加
               </Button>
@@ -61,9 +69,15 @@ const CafeDiaryList = () => {
                 />
               ))}
             </div>
-            <CreateCafeDiaryFloatingButton />
+            <CreateCafeDiaryFloatingButton onClick={handleCreateDiary} />
           </>
         )}
+
+        <CafeDiaryForm
+          open={isFormOpen}
+          onOpenChange={setIsFormOpen}
+          onSubmit={handleFormSubmit}
+        />
       </div>
     </div>
   );
