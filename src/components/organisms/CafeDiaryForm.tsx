@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CafeDiaryData } from "@/types/cafe-diary";
 import { cafeDiaryValidation } from "@/validations/cafe-diary-validation";
+import DatePicker from "@/components/ui/date-picker";
 
 type CafeDiaryFormData = z.infer<typeof cafeDiaryValidation>;
 
@@ -144,17 +145,16 @@ const CafeDiaryForm: React.FC<CafeDiaryFormProps> = ({
               control={form.control}
               name="visitDate"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel className="text-amber-900">
                     訪問日 <span className="text-rose-500">*</span>
                   </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="date"
-                      className="bg-amber-50 border-amber-200 focus:ring-amber-400"
-                      {...field}
-                    />
-                  </FormControl>
+                  <DatePicker
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="日付を選択"
+                    className="bg-amber-50 border-amber-200 focus:ring-amber-400"
+                  />
                   <FormMessage />
                 </FormItem>
               )}
