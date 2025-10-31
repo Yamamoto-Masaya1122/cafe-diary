@@ -1,22 +1,26 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { Coffee, Plus } from "lucide-react";
-import { CafeDiaryCard } from "@/components/molecules/CafeDiaryCard";
-import { mockCafeDiaryData } from "@/mocks/cafe-diary-data";
-import { CreateCafeDiaryFloatingButton } from "@/components/atoms/CafeDiaryFloatingButton";
-import { Button } from "@/components/atoms/Button";
-import CafeDiaryForm from "@/components/organisms/CafeDiaryForm";
-import { CafeDiaryData } from "@/types/cafe-diary";
+import React, { useState } from 'react';
+import { Coffee, Plus } from 'lucide-react';
+import { CafeDiaryCard } from '@/components/molecules/CafeDiaryCard';
+import { mockCafeDiaryData } from '@/mocks/cafe-diary-data';
+import { CreateCafeDiaryFloatingButton } from '@/components/atoms/CafeDiaryFloatingButton';
+import { Button } from '@/components/atoms/Button';
+import CafeDiaryForm from '@/components/organisms/CafeDiaryForm';
+import { CafeDiaryData } from '@/types/cafe-diary';
+import CafeDiaryDetailModal from '@/components/organisms/CafeDiaryDetailModal';
 
 const CafeDiaryList = () => {
   // モックデータ
   const [cafeDiaries, setCafeDiaries] = useState(mockCafeDiaryData);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [selectedCafe, setSelectedCafe] = useState<CafeDiaryData | null>(null);
 
   const handleCardClick = (id: number) => {
-    console.log(`Cafe ${id} clicked`);
-    // ここに詳細ページへの遷移などを実装
+    const found = cafeDiaries.find((c) => c.id === id) || null;
+    setSelectedCafe(found);
+    setIsDetailOpen(true);
   };
 
   const handleCreateDiary = () => {
@@ -35,9 +39,7 @@ const CafeDiaryList = () => {
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-3">
             <div>
-              <p className="text-sm text-amber-600">
-                {cafeDiaries.length}件のカフェ日記を記録
-              </p>
+              <p className="text-sm text-amber-600">{cafeDiaries.length}件のカフェ日記を記録</p>
             </div>
           </div>
         </div>
@@ -46,9 +48,7 @@ const CafeDiaryList = () => {
           <div className="text-center py-16">
             <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-12 border border-amber-100">
               <Coffee className="w-16 h-16 text-amber-300 mx-auto mb-4" />
-              <h2 className="text-xm md:text-2xl font-semibold text-amber-900 mb-6">
-                カフェ日記が登録されていません
-              </h2>
+              <h2 className="text-xm md:text-2xl font-semibold text-amber-900 mb-6">カフェ日記が登録されていません</h2>
               <Button
                 onClick={handleCreateDiary}
                 icon={Plus}
@@ -62,22 +62,27 @@ const CafeDiaryList = () => {
           <>
             <div className="grid gap-4 mb-6">
               {cafeDiaries.map((cafeDiary) => (
-                <CafeDiaryCard
-                  key={cafeDiary.id}
-                  {...cafeDiary}
-                  onClick={handleCardClick}
-                />
+                <CafeDiaryCard key={cafeDiary.id} {...cafeDiary} onClick={handleCardClick} />
               ))}
             </div>
             <CreateCafeDiaryFloatingButton onClick={handleCreateDiary} />
           </>
         )}
 
-        <CafeDiaryForm
-          open={isFormOpen}
-          onOpenChange={setIsFormOpen}
-          onSubmit={handleFormSubmit}
-        />
+        {/* カフェ日記登録モーダル */}
+        <CafeDiaryForm open={isFormOpen} onOpenChange={setIsFormOpen} onSubmit={handleFormSubmit} />
+
+        {/* カフェ日記詳細モーダル */}
+        {selectedCafe && (
+          <CafeDiaryDetailModal
+            cafeDiary={selectedCafe}
+            isOpen={isDetailOpen}
+            onOpenChange={(open) => {
+              setIsDetailOpen(open);
+              if (!open) setSelectedCafe(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );
