@@ -33,6 +33,19 @@ const CafeDiaryList = () => {
     setIsFormOpen(false);
   };
 
+  const handleUpdateDiary = (data: CafeDiaryData) => {
+    // 既存のカフェ日記を更新
+    setCafeDiaries((prev) => prev.map((diary) => (diary.id === data.id ? data : diary)));
+    setIsDetailOpen(false);
+  };
+
+  const handleDeleteDiary = (id: number) => {
+    // カフェ日記を削除
+    setCafeDiaries((prev) => prev.filter((diary) => diary.id !== id));
+    setIsDetailOpen(false);
+    setSelectedCafe(null);
+  };
+
   return (
     <div className="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-rose-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -81,6 +94,8 @@ const CafeDiaryList = () => {
               setIsDetailOpen(open);
               if (!open) setSelectedCafe(null);
             }}
+            onSubmit={handleUpdateDiary}
+            onDelete={handleDeleteDiary}
           />
         )}
       </div>

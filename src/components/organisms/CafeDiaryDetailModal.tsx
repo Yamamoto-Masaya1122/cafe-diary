@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Star, MapPin, Calendar, Edit2, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -17,9 +17,11 @@ interface CafeDiaryDetailModalProps {
   cafeDiary: CafeDiaryData;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  onSubmit: (data: CafeDiaryData) => void;
+  onDelete?: (id: number) => void;
 }
 
-const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange }: CafeDiaryDetailModalProps) => {
+const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDelete }: CafeDiaryDetailModalProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [cafeDiaryData, setCafeDiaryData] = useState(cafeDiary);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,14 +47,41 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange }: CafeDiaryDeta
     },
   });
 
-  const handleUpdate = async () => {
-    setIsLoading(true);
-    setError('');
+  // cafeDiaryプロップが変更されたときに状態を更新
+  useEffect(() => {
+    setCafeDiaryData(cafeDiary);
+    form.reset({
+      name: cafeDiary.name,
+      location: cafeDiary.location,
+      visitDate: cafeDiary.visit_date,
+      rating: cafeDiary.rating,
+      notes: cafeDiary.notes,
+    });
+    setIsEditing(false);
+  }, [cafeDiary, form]);
 
+  const handleUpdate = async (data: CafeDiaryFormData) => {
+    setIsLoading(true);
     try {
-      // TODO: 更新処理
-      setCafeDiaryData(cafeDiaryData);
-      onOpenChange(false);
+      // フォームデータをCafeDiaryData形式に変換（既存のIDを保持）
+      const updatedCafeDiaryData: CafeDiaryData = {
+        id: cafeDiaryData.id, // 既存のIDを保持
+        name: data.name,
+        title: data.name, // タイトルは名前と同じにする
+        content: data.notes || '',
+        location: data.location || '',
+        notes: data.notes || '',
+        rating: data.rating,
+        visit_date: data.visitDate,
+      };
+
+      if (onSubmit) {
+        onSubmit(updatedCafeDiaryData);
+      }
+
+      // ローカル状態も更新
+      setCafeDiaryData(updatedCafeDiaryData);
+      setIsEditing(false);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'エラーが発生しました';
       setError(message);
@@ -62,14 +91,17 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange }: CafeDiaryDeta
   };
 
   const handleDelete = async () => {
-    // TODO: 削除処理
     if (!confirm('本当にこのカフェを削除しますか？')) return;
     setIsLoading(true);
     try {
-      console.log('delete', cafeDiary);
-      onOpenChange(false);
+      if (onDelete) {
+        onDelete(cafeDiaryData.id);
+      }
     } catch (err) {
       console.error(err);
+      setError('削除に失敗しました');
+    } finally {
+      setIsLoading(false);
     }
   };
 
