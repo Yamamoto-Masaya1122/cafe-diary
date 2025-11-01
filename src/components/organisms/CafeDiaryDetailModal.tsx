@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { cafeDiaryValidation } from '@/validations/cafe-diary-validation';
 import { z } from 'zod';
+import { toast } from 'sonner';
 
 type CafeDiaryFormData = z.infer<typeof cafeDiaryValidation>;
 
@@ -61,6 +62,7 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
   }, [cafeDiary, form]);
 
   const handleUpdate = async (data: CafeDiaryFormData) => {
+    if (!onSubmit) return;
     setIsLoading(true);
     try {
       // フォームデータをCafeDiaryData形式に変換（既存のIDを保持）
@@ -75,31 +77,31 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
         visit_date: data.visitDate,
       };
 
-      if (onSubmit) {
-        onSubmit(updatedCafeDiaryData);
-      }
+      onSubmit(updatedCafeDiaryData);
 
       // ローカル状態も更新
       setCafeDiaryData(updatedCafeDiaryData);
       setIsEditing(false);
+      toast.success('日記を更新しました');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'エラーが発生しました';
       setError(message);
+      toast.error('日記を更新できませんでした');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm('本当にこのカフェを削除しますか？')) return;
+    if (!confirm('本当にこの日記を削除しますか？')) return;
+    if (!onDelete) return;
     setIsLoading(true);
     try {
-      if (onDelete) {
-        onDelete(cafeDiaryData.id);
-      }
+      onDelete(cafeDiaryData.id);
+      toast.success('日記を削除しました');
     } catch (err) {
       console.error(err);
-      setError('削除に失敗しました');
+      toast.error('日記を削除できませんでした');
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +112,9 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <DialogTitle className="text-xl font-bold text-amber-900">{isEditing ? 'カフェを編集' : ''}</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-amber-900">
+              {isEditing ? 'カフェ日記を編集' : ''}
+            </DialogTitle>
             <DialogDescription></DialogDescription>
           </div>
         </DialogHeader>

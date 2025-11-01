@@ -9,6 +9,7 @@ import { Button } from '@/components/atoms/Button';
 import CafeDiaryForm from '@/components/organisms/CafeDiaryForm';
 import { CafeDiaryData } from '@/types/cafe-diary';
 import CafeDiaryDetailModal from '@/components/organisms/CafeDiaryDetailModal';
+import { toast } from 'sonner';
 
 const CafeDiaryList = () => {
   // モックデータ
@@ -31,6 +32,7 @@ const CafeDiaryList = () => {
     // 新しいカフェ日記をリストに追加
     setCafeDiaries((prev) => [data, ...prev]);
     setIsFormOpen(false);
+    toast.success('日記を作成しました');
   };
 
   const handleUpdateDiary = (data: CafeDiaryData) => {
