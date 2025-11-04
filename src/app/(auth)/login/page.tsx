@@ -3,32 +3,37 @@
 import React, { useState } from "react";
 import { Coffee, Mail, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { LoginFormData } from "@/types/user";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { loginUserValidation } from "@/validations/user-validation";
 import { login } from "@/lib/api";
 import { toast } from "sonner";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+type LoginFormData = z.infer<typeof loginUserValidation>;
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginUserValidation),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const handleSubmit = async (data: LoginFormData) => {
     setLoading(true);
-    setError("");
 
     try {
-      const loginFormData: LoginFormData = {
-        email,
-        password,
-      };
-      await login(loginFormData);
+      await login(data);
       toast.success("ログインしました");
       router.push("/cafe-diary");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "エラーが発生しました");
       toast.error(error instanceof Error ? error.message : "ログインに失敗しました");
     } finally {
       setLoading(false);
@@ -46,49 +51,61 @@ const LoginPage = () => {
 
           <h1 className="text-3xl font-bold text-center text-amber-900 mb-2">ログイン</h1>
 
-          {error && (
-            <div className="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-sm">{error}</div>
-          )}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-amber-900">メールアドレス</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
+                        <Input
+                          type="email"
+                          placeholder="your@email.com"
+                          className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-amber-900 mb-2">メールアドレス</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all text-amber-900 placeholder-amber-300"
-                  placeholder="your@email.com"
-                  required
-                />
-              </div>
-            </div>
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-amber-900">パスワード</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div>
-              <label className="block text-sm font-medium text-amber-900 mb-2">パスワード</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all text-amber-900 placeholder-amber-300"
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white py-3 rounded-xl font-medium hover:from-amber-500 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
-            >
-              {loading ? "処理中..." : "ログイン"}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white py-3 rounded-xl font-medium hover:from-amber-500 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
+              >
+                {loading ? "処理中..." : "ログイン"}
+              </button>
+            </form>
+          </Form>
 
           <div className="mt-6 text-center">
             <button
