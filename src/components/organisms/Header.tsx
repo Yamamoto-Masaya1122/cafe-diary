@@ -1,11 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, X, Coffee } from "lucide-react";
+import { useRouter } from "next/navigation";
 import HamburgerMenu from "@/components/molecules/HamburgerMenu";
+import { logout } from "@/lib/api";
+import { toast } from "sonner";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    // ログイン状態を確認
+    const token = localStorage.getItem("authToken");
+    setIsLoggedIn(!!token);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -13,6 +24,18 @@ const Header = () => {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsLoggedIn(false);
+      toast.success("ログアウトしました");
+      router.push("/");
+    } catch (error: unknown) {
+      toast.error("ログアウトに失敗しました");
+      console.error(error);
+    }
   };
 
   return (
@@ -44,7 +67,7 @@ const Header = () => {
         </div>
 
         {/* ハンバーガーメニュー */}
-        <HamburgerMenu isOpen={isMenuOpen} onClose={closeMenu} />
+        <HamburgerMenu isOpen={isMenuOpen} onClose={closeMenu} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
       </div>
     </header>
   );

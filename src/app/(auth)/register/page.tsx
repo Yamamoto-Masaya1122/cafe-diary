@@ -1,0 +1,170 @@
+"use client";
+
+import React, { useState } from "react";
+import { Coffee, Mail, Lock, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { registerUserValidation } from "@/validations/user-validation";
+import { register } from "@/lib/api";
+import { toast } from "sonner";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+type RegisterFormData = z.infer<typeof registerUserValidation>;
+
+const RegisterPage = () => {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const form = useForm<RegisterFormData>({
+    resolver: zodResolver(registerUserValidation),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      passwordConfirmation: "",
+    },
+  });
+
+  const handleSubmit = async (data: RegisterFormData) => {
+    setLoading(true);
+
+    try {
+      await register(data);
+      toast.success("新規登録しました");
+      router.push("/login");
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "新規登録に失敗しました");
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 border border-amber-100">
+          <div className="flex justify-center mb-6">
+            <div className="bg-gradient-to-br from-amber-400 to-orange-500 p-4 rounded-2xl shadow-lg">
+              <Coffee className="w-10 h-10 text-white" />
+            </div>
+          </div>
+
+          <h1 className="text-3xl font-bold text-center text-amber-900 mb-2">新規登録</h1>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-amber-900">ユーザー名</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
+                        <Input
+                          type="text"
+                          placeholder="山田太郎"
+                          className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-amber-900">メールアドレス</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
+                        <Input
+                          type="email"
+                          placeholder="your@email.com"
+                          className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-amber-900">パスワード</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
+                        <Input
+                          type="password"
+                          placeholder="英数字8文字以上"
+                          className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="passwordConfirmation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-amber-900">パスワード確認</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
+                        <Input
+                          type="password"
+                          placeholder="英数字8文字以上"
+                          className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white py-3 rounded-xl font-medium hover:from-amber-500 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
+              >
+                {loading ? "処理中..." : "新規登録"}
+              </button>
+            </form>
+          </Form>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => router.push("/login")}
+              className="text-sm text-amber-600 hover:text-amber-700 font-medium transition-colors"
+            >
+              アカウントをお持ちの方はこちら
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RegisterPage;
