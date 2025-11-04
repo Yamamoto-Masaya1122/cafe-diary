@@ -3,36 +3,40 @@
 import React, { useState } from "react";
 import { Coffee, Mail, Lock, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { UserFormData } from "@/types/user";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { registerUserValidation } from "@/validations/user-validation";
 import { register } from "@/lib/api";
 import { toast } from "sonner";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+type RegisterFormData = z.infer<typeof registerUserValidation>;
 
 const RegisterPage = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<RegisterFormData>({
+    resolver: zodResolver(registerUserValidation),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      passwordConfirmation: "",
+    },
+  });
+
+  const handleSubmit = async (data: RegisterFormData) => {
     setLoading(true);
-    setError("");
 
     try {
-      const userFormData: UserFormData = {
-        name,
-        email,
-        password,
-        passwordConfirmation,
-      };
-      await register(userFormData);
+      await register(data);
       toast.success("新規登録しました");
       router.push("/login");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "エラーが発生しました");
+      toast.error(error instanceof Error ? error.message : "新規登録に失敗しました");
     } finally {
       setLoading(false);
     }
@@ -49,76 +53,105 @@ const RegisterPage = () => {
 
           <h1 className="text-3xl font-bold text-center text-amber-900 mb-2">新規登録</h1>
 
-          {error && (
-            <div className="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-sm">{error}</div>
-          )}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-amber-900">ユーザー名</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
+                        <Input
+                          type="text"
+                          placeholder="山田太郎"
+                          className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-amber-900 mb-2">ユーザー名</label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400" />
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all text-amber-900 placeholder-amber-300"
-                  placeholder="山田太郎"
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-amber-900 mb-2">メールアドレス</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all text-amber-900 placeholder-amber-300"
-                  placeholder="your@email.com"
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-amber-900 mb-2">パスワード</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all text-amber-900 placeholder-amber-300"
-                  placeholder="英数字8文字以上"
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-amber-900 mb-2">パスワード確認</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400" />
-                <input
-                  type="password"
-                  value={passwordConfirmation}
-                  onChange={(e) => setPasswordConfirmation(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all text-amber-900 placeholder-amber-300"
-                  placeholder="英数字8文字以上"
-                  required
-                />
-              </div>
-            </div>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-amber-900">メールアドレス</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
+                        <Input
+                          type="email"
+                          placeholder="your@email.com"
+                          className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white py-3 rounded-xl font-medium hover:from-amber-500 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
-            >
-              {loading ? "処理中..." : "新規登録"}
-            </button>
-          </form>
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-amber-900">パスワード</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
+                        <Input
+                          type="password"
+                          placeholder="英数字8文字以上"
+                          className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="passwordConfirmation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-amber-900">パスワード確認</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
+                        <Input
+                          type="password"
+                          placeholder="英数字8文字以上"
+                          className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white py-3 rounded-xl font-medium hover:from-amber-500 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
+              >
+                {loading ? "処理中..." : "新規登録"}
+              </button>
+            </form>
+          </Form>
 
           <div className="mt-6 text-center">
             <button
