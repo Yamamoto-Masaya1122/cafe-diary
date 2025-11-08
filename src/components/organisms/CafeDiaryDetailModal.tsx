@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Star, MapPin, Calendar, Edit2, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CafeDiaryData } from '@/types/cafe-diary';
-import { Form } from '@/components/ui/form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { cafeDiaryValidation } from '@/validations/cafe-diary-validation';
-import { z } from 'zod';
-import { toast } from 'sonner';
-import { CafeDiaryFormFields } from '@/components/molecules/CafeDiaryFormFields';
-import { convertFormDataToCafeDiaryData, convertCafeDiaryDataToFormData } from '@/lib/cafe-diary-utils';
+import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Star, MapPin, Calendar, Edit2, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CafeDiaryData } from "@/types/cafe-diary";
+import { Form } from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { cafeDiaryValidation } from "@/validations/cafe-diary-validation";
+import { z } from "zod";
+import { toast } from "sonner";
+import { CafeDiaryFormFields } from "@/components/molecules/CafeDiaryFormFields";
 
 type CafeDiaryFormData = z.infer<typeof cafeDiaryValidation>;
 
@@ -19,33 +18,33 @@ interface CafeDiaryDetailModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CafeDiaryData) => void;
-  onDelete?: (id: number) => void;
+  onDelete?: (id: string) => void;
 }
 
 const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDelete }: CafeDiaryDetailModalProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [cafeDiaryData, setCafeDiaryData] = useState(cafeDiary);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return date.toLocaleDateString("ja-JP", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   const form = useForm<CafeDiaryFormData>({
     resolver: zodResolver(cafeDiaryValidation),
-    defaultValues: convertCafeDiaryDataToFormData(cafeDiaryData),
+    defaultValues: cafeDiaryData,
   });
 
   // cafeDiaryプロップが変更されたときに状態を更新
   useEffect(() => {
     setCafeDiaryData(cafeDiary);
-    form.reset(convertCafeDiaryDataToFormData(cafeDiary));
+    form.reset(cafeDiary);
     setIsEditing(false);
   }, [cafeDiary, form]);
 
@@ -53,33 +52,31 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
     if (!onSubmit) return;
     setIsLoading(true);
     try {
-      const updatedCafeDiaryData = convertFormDataToCafeDiaryData(data, cafeDiaryData.id);
-
-      onSubmit(updatedCafeDiaryData);
+      onSubmit({ ...data, id: cafeDiaryData.id });
 
       // ローカル状態も更新
-      setCafeDiaryData(updatedCafeDiaryData);
+      setCafeDiaryData({ ...data, id: cafeDiaryData.id });
       setIsEditing(false);
-      toast.success('日記を更新しました');
+      toast.success("日記を更新しました");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'エラーが発生しました';
+      const message = err instanceof Error ? err.message : "エラーが発生しました";
       setError(message);
-      toast.error('日記を更新できませんでした');
+      toast.error("日記を更新できませんでした");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm('本当にこの日記を削除しますか？')) return;
+    if (!confirm("本当にこの日記を削除しますか？")) return;
     if (!onDelete) return;
     setIsLoading(true);
     try {
       onDelete(cafeDiaryData.id);
-      toast.success('日記を削除しました');
+      toast.success("日記を削除しました");
     } catch (err) {
       console.error(err);
-      toast.error('日記を削除できませんでした');
+      toast.error("日記を削除できませんでした");
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +88,7 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
         <DialogHeader>
           <div className="flex items-center gap-3">
             <DialogTitle className="text-xl font-bold text-amber-900">
-              {isEditing ? 'カフェ日記を編集' : ''}
+              {isEditing ? "カフェ日記を編集" : ""}
             </DialogTitle>
             <DialogDescription></DialogDescription>
           </div>
@@ -118,7 +115,7 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
                       disabled={isLoading}
                       className="flex-1 bg-linear-to-r from-amber-400 to-orange-500 text-white hover:from-amber-500 hover:to-orange-600"
                     >
-                      {isLoading ? '更新中...' : '更新'}
+                      {isLoading ? "更新中..." : "更新"}
                     </Button>
                   </div>
                 </form>
@@ -133,7 +130,7 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
                     <Star
                       key={i}
                       className={`w-6 h-6 ${
-                        i < cafeDiaryData.rating ? 'fill-amber-400 text-amber-400' : 'text-amber-200'
+                        i < cafeDiaryData.rating ? "fill-amber-400 text-amber-400" : "text-amber-200"
                       }`}
                     />
                   ))}
@@ -150,7 +147,7 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
 
                 <div className="flex items-start gap-3 text-amber-700">
                   <Calendar className="w-5 h-5 mt-0.5 shrink-0" />
-                  <span>{formatDate(cafeDiaryData.visit_date)}</span>
+                  <span>{formatDate(cafeDiaryData.visitDate)}</span>
                 </div>
 
                 {cafeDiaryData.notes && (
