@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Menu, X, Coffee } from "lucide-react";
 import { useRouter } from "next/navigation";
 import HamburgerMenu from "@/components/molecules/HamburgerMenu";
-import { logout } from "@/lib/api";
+import { apiClient } from "@/lib/api";
 import { toast } from "sonner";
 
 const Header = () => {
@@ -28,7 +28,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await apiClient.logout();
       setIsLoggedIn(false);
       toast.success("ログアウトしました");
       router.push("/");

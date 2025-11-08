@@ -1,11 +1,18 @@
 // カフェ日記データの型
 export interface CafeDiaryData {
-  id: number;
+  id: string;
   name: string;
-  title: string;
-  content: string;
-  location: string;
-  notes: string;
+  location?: string;
+  visitDate: string;
   rating: number;
-  visit_date: string;
+  notes?: string;
+}
+
+// リクエストデータの型
+export interface requestCafeDiaryData {
+  name: string;
+  location?: string;
+  visitDate: string;
+  rating: number;
+  notes?: string;
 }

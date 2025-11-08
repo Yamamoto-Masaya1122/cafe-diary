@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { loginUserValidation } from "@/validations/user-validation";
-import { login } from "@/lib/api";
+import { apiClient } from "@/lib/api";
 import { toast } from "sonner";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -30,7 +30,7 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      await login(data);
+      await apiClient.login(data);
       toast.success("ログインしました");
       router.push("/cafe-diary");
     } catch (error: unknown) {

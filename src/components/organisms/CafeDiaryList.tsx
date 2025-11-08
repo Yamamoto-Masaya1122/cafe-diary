@@ -1,23 +1,37 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Coffee, Plus } from 'lucide-react';
-import { CafeDiaryCard } from '@/components/molecules/CafeDiaryCard';
-import { mockCafeDiaryData } from '@/mocks/cafe-diary-data';
-import { CreateCafeDiaryFloatingButton } from '@/components/atoms/CafeDiaryFloatingButton';
-import { Button } from '@/components/atoms/Button';
-import CafeDiaryForm from '@/components/organisms/CafeDiaryForm';
-import { CafeDiaryData } from '@/types/cafe-diary';
-import CafeDiaryDetailModal from '@/components/organisms/CafeDiaryDetailModal';
+import React, { useEffect, useState } from "react";
+import { Coffee, Plus } from "lucide-react";
+import { CafeDiaryCard } from "@/components/molecules/CafeDiaryCard";
+import { CreateCafeDiaryFloatingButton } from "@/components/atoms/CafeDiaryFloatingButton";
+import { Button } from "@/components/atoms/Button";
+import CafeDiaryForm from "@/components/organisms/CafeDiaryForm";
+import { CafeDiaryData, requestCafeDiaryData } from "@/types/cafe-diary";
+import CafeDiaryDetailModal from "@/components/organisms/CafeDiaryDetailModal";
+import { apiClient } from "@/lib/api";
+import { toast } from "sonner";
 
 const CafeDiaryList = () => {
-  // モックデータ
-  const [cafeDiaries, setCafeDiaries] = useState(mockCafeDiaryData);
+  const [cafeDiaries, setCafeDiaries] = useState<CafeDiaryData[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedCafe, setSelectedCafe] = useState<CafeDiaryData | null>(null);
 
-  const handleCardClick = (id: number) => {
+  useEffect(() => {
+    const fetchCafeDiaries = async () => {
+      try {
+        const data = await apiClient.getCafeDiaries();
+        setCafeDiaries(data);
+      } catch (error) {
+        console.error("Error fetching cafe diaries:", error);
+        toast.error("カフェ日記を取得できませんでした");
+      }
+    };
+
+    fetchCafeDiaries();
+  }, []);
+
+  const handleCardClick = (id: string) => {
     const found = cafeDiaries.find((c) => c.id === id) || null;
     setSelectedCafe(found);
     setIsDetailOpen(true);
@@ -27,10 +41,18 @@ const CafeDiaryList = () => {
     setIsFormOpen(true);
   };
 
-  const handleFormSubmit = (data: CafeDiaryData) => {
-    // 新しいカフェ日記をリストに追加
-    setCafeDiaries((prev) => [data, ...prev]);
-    setIsFormOpen(false);
+  // カフェ日記を作成
+  const handleFormSubmit = async (data: requestCafeDiaryData) => {
+    try {
+      const cafeDiary = await apiClient.createCafeDiary(data);
+      // 新しいカフェ日記をリストに追加
+      setCafeDiaries((prev) => [cafeDiary, ...prev]);
+      setIsFormOpen(false);
+      toast.success("カフェ日記を作成しました");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("カフェ日記を作成できませんでした");
+    }
   };
 
   const handleUpdateDiary = (data: CafeDiaryData) => {
@@ -39,7 +61,7 @@ const CafeDiaryList = () => {
     setIsDetailOpen(false);
   };
 
-  const handleDeleteDiary = (id: number) => {
+  const handleDeleteDiary = (id: string) => {
     // カフェ日記を削除
     setCafeDiaries((prev) => prev.filter((diary) => diary.id !== id));
     setIsDetailOpen(false);

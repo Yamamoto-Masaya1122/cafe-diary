@@ -1,24 +1,22 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { CafeDiaryData } from '@/types/cafe-diary';
-import { cafeDiaryValidation } from '@/validations/cafe-diary-validation';
-import { CafeDiaryFormFields } from '@/components/molecules/CafeDiaryFormFields';
-import { convertFormDataToCafeDiaryData } from '@/lib/cafe-diary-utils';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { requestCafeDiaryData } from "@/types/cafe-diary";
+import { cafeDiaryValidation } from "@/validations/cafe-diary-validation";
+import { CafeDiaryFormFields } from "@/components/molecules/CafeDiaryFormFields";
 
 type CafeDiaryFormData = z.infer<typeof cafeDiaryValidation>;
 
 interface CafeDiaryFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit?: (data: CafeDiaryData) => void;
+  onSubmit: (data: requestCafeDiaryData) => Promise<void> | void;
 }
 
 const CafeDiaryForm: React.FC<CafeDiaryFormProps> = ({ open, onOpenChange, onSubmit }) => {
@@ -27,32 +25,24 @@ const CafeDiaryForm: React.FC<CafeDiaryFormProps> = ({ open, onOpenChange, onSub
   const form = useForm<CafeDiaryFormData>({
     resolver: zodResolver(cafeDiaryValidation),
     defaultValues: {
-      name: '',
-      location: '',
-      visitDate: new Date().toISOString().split('T')[0],
+      name: "",
+      location: "",
+      visitDate: new Date().toISOString().split("T")[0],
       rating: 1,
-      notes: '',
+      notes: "",
     },
   });
 
-  const handleSubmit = async (data: CafeDiaryFormData) => {
-    setIsLoading(true);
-    if (!onSubmit) return;
+  const handleSubmit = form.handleSubmit(async (data) => {
     try {
-      const cafeDiaryData = convertFormDataToCafeDiaryData(data);
-      onSubmit(cafeDiaryData);
-
-      // フォームをリセット
+      setIsLoading(true);
+      await onSubmit(data);
       form.reset();
       onOpenChange(false);
-      toast.success('日記を作成しました');
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      toast.error('日記を作成できませんでした');
     } finally {
       setIsLoading(false);
     }
-  };
+  });
 
   const handleClose = () => {
     form.reset();
@@ -70,7 +60,7 @@ const CafeDiaryForm: React.FC<CafeDiaryFormProps> = ({ open, onOpenChange, onSub
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <CafeDiaryFormFields form={form} />
 
             <div className="flex gap-3 pt-4">
@@ -87,7 +77,7 @@ const CafeDiaryForm: React.FC<CafeDiaryFormProps> = ({ open, onOpenChange, onSub
                 disabled={isLoading}
                 className="flex-1 bg-linear-to-r from-amber-400 to-orange-500 text-white hover:from-amber-500 hover:to-orange-600"
               >
-                {isLoading ? '保存中...' : '保存'}
+                {isLoading ? "保存中..." : "保存"}
               </Button>
             </div>
           </form>

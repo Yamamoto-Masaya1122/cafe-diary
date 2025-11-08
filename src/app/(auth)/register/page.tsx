@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { registerUserValidation } from "@/validations/user-validation";
-import { register } from "@/lib/api";
+import { apiClient } from "@/lib/api";
 import { toast } from "sonner";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,7 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      await register(data);
+      await apiClient.register(data);
       toast.success("新規登録しました");
       router.push("/login");
     } catch (error: unknown) {

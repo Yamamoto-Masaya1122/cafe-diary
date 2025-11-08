@@ -1,11 +1,11 @@
-import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import DatePicker from '@/components/ui/date-picker';
-import { Star } from 'lucide-react';
-import { z } from 'zod';
-import { cafeDiaryValidation } from '@/validations/cafe-diary-validation';
+import React from "react";
+import { UseFormReturn } from "react-hook-form";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import DatePicker from "@/components/ui/date-picker";
+import { Star } from "lucide-react";
+import { z } from "zod";
+import { cafeDiaryValidation } from "@/validations/cafe-diary-validation";
 
 type CafeDiaryFormData = z.infer<typeof cafeDiaryValidation>;
 
@@ -92,7 +92,7 @@ export const CafeDiaryFormFields: React.FC<CafeDiaryFormFieldsProps> = ({ form }
                   >
                     <Star
                       className={`w-10 h-10 ${
-                        value <= field.value ? 'fill-amber-400 text-amber-400' : 'text-amber-200'
+                        value <= field.value ? "fill-amber-400 text-amber-400" : "text-amber-200"
                       }`}
                     />
                   </button>
