@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import prisma from "@/lib/db";
 import { cafeDiaryValidation } from "@/validations/cafe-diary-validation";
+import { CafeDiaryData } from "@/types/cafe-diary";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
@@ -29,13 +30,14 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(
-      diaries.map((diary) => ({
+      diaries.map((diary: CafeDiaryData) => ({
         id: diary.id,
         name: diary.name,
         location: diary.location,
-        visitDate: diary.visitDate.toISOString().split("T")[0],
+        visitDate: diary.visitDate,
         rating: diary.rating,
         notes: diary.notes,
+        userId: diary.userId,
       }))
     );
   } catch (error) {
