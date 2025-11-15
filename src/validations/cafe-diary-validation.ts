@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 export const cafeDiaryValidation = z.object({
+  id: z.string(),
+  userId: z.string(),
   name: z.string().min(1, "カフェの名前は必須です"),
   location: z.string().optional(),
   visitDate: z.string().refine((date) => new Date(date) < new Date(), { message: "未来の日付は禁止です" }),

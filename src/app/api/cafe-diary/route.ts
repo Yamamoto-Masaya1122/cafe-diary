@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         id: created.id,
+        userId: created.userId,
         name: created.name,
         location: created.location,
         visitDate: created.visitDate.toISOString().split("T")[0],

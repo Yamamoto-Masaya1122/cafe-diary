@@ -1,5 +1,5 @@
 import { UserFormData, LoginFormData } from "@/types/user";
-import { CafeDiaryData, requestCafeDiaryData } from "@/types/cafe-diary";
+import { CafeDiaryData } from "@/types/cafe-diary";
 
 const API_BASE_URL = "/api";
 
@@ -101,14 +101,14 @@ class ApiClient {
     }
   }
 
-  async createCafeDiary(cafeDiaryData: requestCafeDiaryData): Promise<CafeDiaryData> {
+  async createCafeDiary(cafeDiaryData: CafeDiaryData): Promise<CafeDiaryData> {
     try {
       const token = this.getAuthToken();
       if (!token) {
         throw new Error("ログイン情報が見つかりません");
       }
 
-      const response = await fetch(`${this.baseUrl}/cafe-diaries`, {
+      const response = await fetch(`${this.baseUrl}/cafe-diary`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -135,7 +135,7 @@ class ApiClient {
         throw new Error("ログイン情報が見つかりません");
       }
 
-      const response = await fetch(`${this.baseUrl}/cafe-diaries`, {
+      const response = await fetch(`${this.baseUrl}/cafe-diary`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -147,6 +147,33 @@ class ApiClient {
       }
 
       const data: CafeDiaryData[] = await response.json();
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async updateCafeDiary(cafeDiaryData: CafeDiaryData): Promise<CafeDiaryData> {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error("ログイン情報が見つかりません");
+      }
+      const response = await fetch(`${this.baseUrl}/cafe-diary/${cafeDiaryData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(cafeDiaryData),
+      });
+      if (!response.ok) {
+        console.log("エラーが発生しました", response);
+        const data = await response.json();
+        throw new Error(data.message || "カフェ日記を更新できませんでした");
+      }
+      const data: CafeDiaryData = await response.json();
       return data;
     } catch (error) {
       console.error(error);

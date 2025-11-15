@@ -52,10 +52,10 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
     if (!onSubmit) return;
     setIsLoading(true);
     try {
-      onSubmit({ ...data, id: cafeDiaryData.id });
+      onSubmit({ ...data, id: cafeDiaryData.id, userId: cafeDiaryData.userId });
 
       // ローカル状態も更新
-      setCafeDiaryData({ ...data, id: cafeDiaryData.id });
+      setCafeDiaryData({ ...data, id: cafeDiaryData.id, userId: cafeDiaryData.userId });
       setIsEditing(false);
       toast.success("日記を更新しました");
     } catch (err: unknown) {
