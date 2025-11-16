@@ -1,16 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Menu, X, Coffee } from "lucide-react";
 import { useRouter } from "next/navigation";
 import HamburgerMenu from "@/components/molecules/HamburgerMenu";
 import { apiClient } from "@/lib/api";
 import { toast } from "sonner";
+import { AuthUserContext } from "@/app/(main)/layout";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+
+  // ログインユーザー情報を取得
+  const [authUser, setAuthUser] = useContext(AuthUserContext);
+  const userName = authUser?.name ?? "";
 
   useEffect(() => {
     // ログイン状態を確認
@@ -30,6 +35,7 @@ const Header = () => {
     try {
       await apiClient.logout();
       setIsLoggedIn(false);
+      setAuthUser(null);
       toast.success("ログアウトしました");
       router.push("/");
     } catch (error: unknown) {
@@ -67,7 +73,13 @@ const Header = () => {
         </div>
 
         {/* ハンバーガーメニュー */}
-        <HamburgerMenu isOpen={isMenuOpen} onClose={closeMenu} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+        <HamburgerMenu
+          isOpen={isMenuOpen}
+          onClose={closeMenu}
+          isLoggedIn={isLoggedIn}
+          onLogout={handleLogout}
+          userName={userName}
+        />
       </div>
     </header>
   );

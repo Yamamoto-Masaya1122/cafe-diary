@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Heart, LogOut, LogIn, UserPlus, BookOpen } from "lucide-react";
+import { Heart, LogOut, LogIn, UserPlus, BookOpen, User } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -15,6 +15,7 @@ interface MenuItem {
   href?: string;
   icon: React.ComponentType<{ className?: string }>;
   onClick?: () => void;
+  userName?: string;
 }
 
 interface HamburgerMenuProps {
@@ -22,9 +23,10 @@ interface HamburgerMenuProps {
   onClose: () => void;
   isLoggedIn: boolean;
   onLogout: () => void;
+  userName: string;
 }
 
-const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, onClose, isLoggedIn, onLogout }) => {
+const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, onClose, isLoggedIn, onLogout, userName }) => {
   // ログイン前のメニュー項目
   const guestMenuItems: MenuItem[] = [
     {
@@ -41,6 +43,11 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, onClose, isLogged
 
   // ログイン後のメニュー項目
   const authenticatedMenuItems: MenuItem[] = [
+    {
+      title: `${userName}さん`,
+      href: "#",
+      icon: User,
+    },
     {
       title: "日記一覧",
       href: "/cafe-diary",
