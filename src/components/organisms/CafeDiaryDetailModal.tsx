@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Star, MapPin, Calendar, Edit2, Trash2 } from "lucide-react";
+import { Star, MapPin, Calendar, Edit2, Trash2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CafeDiaryData } from "@/types/cafe-diary";
+import { CafeDiaryWithUser } from "@/types/cafe-diary";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -14,16 +14,16 @@ import { CafeDiaryFormFields } from "@/components/molecules/CafeDiaryFormFields"
 type CafeDiaryFormData = z.infer<typeof cafeDiaryValidation>;
 
 interface CafeDiaryDetailModalProps {
-  cafeDiary: CafeDiaryData;
+  cafeDiary: CafeDiaryWithUser;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: CafeDiaryData) => void;
+  onSubmit: (data: CafeDiaryWithUser) => void;
   onDelete?: (id: string) => void;
 }
 
 const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDelete }: CafeDiaryDetailModalProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [cafeDiaryData, setCafeDiaryData] = useState(cafeDiary);
+  const [cafeDiaryData, setCafeDiaryData] = useState<CafeDiaryWithUser>(cafeDiary);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -52,10 +52,10 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
     if (!onSubmit) return;
     setIsLoading(true);
     try {
-      onSubmit({ ...data, id: cafeDiaryData.id, userId: cafeDiaryData.userId });
+      onSubmit({ ...data, id: cafeDiaryData.id, userId: cafeDiaryData.userId, user: cafeDiaryData.user });
 
       // ローカル状態も更新
-      setCafeDiaryData({ ...data, id: cafeDiaryData.id, userId: cafeDiaryData.userId });
+      setCafeDiaryData({ ...data, id: cafeDiaryData.id, userId: cafeDiaryData.userId, user: cafeDiaryData.user });
       setIsEditing(false);
       toast.success("日記を更新しました");
     } catch (err: unknown) {
@@ -148,6 +148,10 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
                 <div className="flex items-start gap-3 text-amber-700">
                   <Calendar className="w-5 h-5 mt-0.5 shrink-0" />
                   <span>{formatDate(cafeDiaryData.visitDate)}</span>
+                </div>
+                <div className="flex items-start gap-3 text-amber-700">
+                  <User className="w-5 h-5 mt-0.5 shrink-0" />
+                  <span>{cafeDiaryData.user.name}</span>
                 </div>
 
                 {cafeDiaryData.notes && (

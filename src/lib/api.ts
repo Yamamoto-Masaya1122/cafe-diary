@@ -1,5 +1,5 @@
 import { UserFormData, LoginFormData } from "@/types/user";
-import { CafeDiaryData } from "@/types/cafe-diary";
+import { CafeDiaryData, CafeDiaryWithUser } from "@/types/cafe-diary";
 
 const API_BASE_URL = "/api";
 
@@ -101,7 +101,7 @@ class ApiClient {
     }
   }
 
-  async createCafeDiary(cafeDiaryData: CafeDiaryData): Promise<CafeDiaryData> {
+  async createCafeDiary(cafeDiaryData: CafeDiaryWithUser): Promise<CafeDiaryWithUser> {
     try {
       const token = this.getAuthToken();
       if (!token) {
@@ -120,7 +120,7 @@ class ApiClient {
         const data = await response.json();
         throw new Error(data.message || "カフェ日記を作成できませんでした");
       }
-      const data: CafeDiaryData = await response.json();
+      const data: CafeDiaryWithUser = await response.json();
       return data;
     } catch (error) {
       console.error(error);
@@ -128,7 +128,7 @@ class ApiClient {
     }
   }
 
-  async getCafeDiaries(): Promise<CafeDiaryData[]> {
+  async getCafeDiaries(): Promise<CafeDiaryWithUser[]> {
     try {
       const token = this.getAuthToken();
       if (!token) {
@@ -146,7 +146,7 @@ class ApiClient {
         throw new Error(data.message || "カフェ日記を取得できませんでした");
       }
 
-      const data: CafeDiaryData[] = await response.json();
+      const data: CafeDiaryWithUser[] = await response.json();
       return data;
     } catch (error) {
       console.error(error);
@@ -154,7 +154,7 @@ class ApiClient {
     }
   }
 
-  async updateCafeDiary(cafeDiaryData: CafeDiaryData): Promise<CafeDiaryData> {
+  async updateCafeDiary(cafeDiaryData: CafeDiaryWithUser): Promise<CafeDiaryWithUser> {
     try {
       const token = this.getAuthToken();
       if (!token) {
@@ -173,7 +173,7 @@ class ApiClient {
         const data = await response.json();
         throw new Error(data.message || "カフェ日記を更新できませんでした");
       }
-      const data: CafeDiaryData = await response.json();
+      const data: CafeDiaryWithUser = await response.json();
       return data;
     } catch (error) {
       console.error(error);

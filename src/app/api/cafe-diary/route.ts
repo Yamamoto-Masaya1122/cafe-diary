@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import prisma from "@/lib/db";
 import { cafeDiaryValidation } from "@/validations/cafe-diary-validation";
-import { CafeDiaryData } from "@/types/cafe-diary";
+import { CafeDiaryWithUser } from "@/types/cafe-diary";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
@@ -25,12 +25,21 @@ export async function GET(request: NextRequest) {
     const payload = authenticate(request);
 
     const diaries = await prisma.cafeDiary.findMany({
-      where: { userId: payload.userId },
+      where: {},
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
       orderBy: { visitDate: "desc" },
     });
 
     return NextResponse.json(
-      diaries.map((diary: CafeDiaryData) => ({
+      diaries.map((diary: CafeDiaryWithUser) => ({
         id: diary.id,
         name: diary.name,
         location: diary.location,
@@ -38,6 +47,7 @@ export async function GET(request: NextRequest) {
         rating: diary.rating,
         notes: diary.notes,
         userId: diary.userId,
+        user: diary.user,
       }))
     );
   } catch (error) {

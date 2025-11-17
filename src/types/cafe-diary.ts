@@ -1,3 +1,5 @@
+import { AuthUser } from "@/types/user";
+
 // カフェ日記のベースの型
 export interface CafeDiaryData {
   id: string;
@@ -7,4 +9,8 @@ export interface CafeDiaryData {
   visitDate: string;
   rating: number;
   notes?: string;
+}
+
+export interface CafeDiaryWithUser extends CafeDiaryData {
+  user: AuthUser;
 }

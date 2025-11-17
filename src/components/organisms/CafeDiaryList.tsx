@@ -6,16 +6,16 @@ import { CafeDiaryCard } from "@/components/molecules/CafeDiaryCard";
 import { CreateCafeDiaryFloatingButton } from "@/components/atoms/CafeDiaryFloatingButton";
 import { Button } from "@/components/atoms/Button";
 import CafeDiaryForm from "@/components/organisms/CafeDiaryForm";
-import { CafeDiaryData } from "@/types/cafe-diary";
+import { CafeDiaryWithUser } from "@/types/cafe-diary";
 import CafeDiaryDetailModal from "@/components/organisms/CafeDiaryDetailModal";
 import { apiClient } from "@/lib/api";
 import { toast } from "sonner";
 
 const CafeDiaryList = () => {
-  const [cafeDiaries, setCafeDiaries] = useState<CafeDiaryData[]>([]);
+  const [cafeDiaries, setCafeDiaries] = useState<CafeDiaryWithUser[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [selectedCafe, setSelectedCafe] = useState<CafeDiaryData | null>(null);
+  const [selectedCafe, setSelectedCafe] = useState<CafeDiaryWithUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const CafeDiaryList = () => {
   };
 
   // カフェ日記を作成
-  const handleFormSubmit = async (data: CafeDiaryData) => {
+  const handleFormSubmit = async (data: CafeDiaryWithUser) => {
     try {
       const cafeDiary = await apiClient.createCafeDiary(data);
       // 新しいカフェ日記をリストに追加
@@ -59,7 +59,7 @@ const CafeDiaryList = () => {
   };
 
   // カフェ日記を更新
-  const handleUpdateDiary = async (data: CafeDiaryData) => {
+  const handleUpdateDiary = async (data: CafeDiaryWithUser) => {
     try {
       const updatedCafeDiary = await apiClient.updateCafeDiary(data);
       setCafeDiaries((prev) => prev.map((diary) => (diary.id === data.id ? updatedCafeDiary : diary)));
