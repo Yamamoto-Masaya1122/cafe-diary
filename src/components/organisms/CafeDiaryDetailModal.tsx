@@ -10,7 +10,7 @@ import { cafeDiaryValidation } from "@/validations/cafe-diary-validation";
 import { z } from "zod";
 import { toast } from "sonner";
 import { CafeDiaryFormFields } from "@/components/molecules/CafeDiaryFormFields";
-import { AuthUserContext } from "@/app/(main)/layout";
+import { AuthUserContext } from "@/components/provider/AuthUserProvider";
 import { useContext } from "react";
 
 type CafeDiaryFormData = z.infer<typeof cafeDiaryValidation>;

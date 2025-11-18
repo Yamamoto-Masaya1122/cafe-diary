@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import HamburgerMenu from "@/components/molecules/HamburgerMenu";
 import { apiClient } from "@/lib/api";
 import { toast } from "sonner";
-import { AuthUserContext } from "@/app/(main)/layout";
+import { AuthUserContext } from "@/components/provider/AuthUserProvider";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
