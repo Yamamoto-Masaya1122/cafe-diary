@@ -22,8 +22,6 @@ const authenticate = (request: NextRequest) => {
 
 export async function GET(request: NextRequest) {
   try {
-    const payload = authenticate(request);
-
     const diaries = await prisma.cafeDiary.findMany({
       where: {},
       include: {
@@ -38,8 +36,16 @@ export async function GET(request: NextRequest) {
       orderBy: { visitDate: "desc" },
     });
 
+    // visitDateをISO形式に変換
+    const convertedDiaries = diaries.map((diary) => {
+      return {
+        ...diary,
+        visitDate: diary.visitDate.toISOString(),
+      };
+    });
+
     return NextResponse.json(
-      diaries.map((diary: CafeDiaryWithUser) => ({
+      convertedDiaries.map((diary: CafeDiaryWithUser) => ({
         id: diary.id,
         name: diary.name,
         location: diary.location,

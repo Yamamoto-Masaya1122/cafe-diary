@@ -10,6 +10,8 @@ import { cafeDiaryValidation } from "@/validations/cafe-diary-validation";
 import { z } from "zod";
 import { toast } from "sonner";
 import { CafeDiaryFormFields } from "@/components/molecules/CafeDiaryFormFields";
+import { AuthUserContext } from "@/app/(main)/layout";
+import { useContext } from "react";
 
 type CafeDiaryFormData = z.infer<typeof cafeDiaryValidation>;
 
@@ -26,6 +28,7 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
   const [cafeDiaryData, setCafeDiaryData] = useState<CafeDiaryWithUser>(cafeDiary);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [currentUser] = useContext(AuthUserContext);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -168,25 +171,27 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
                 </div>
               )}
 
-              <div className="flex gap-3 pt-4 border-t border-amber-100">
-                <Button
-                  onClick={() => setIsEditing(true)}
-                  variant="outline"
-                  className="flex-1 bg-amber-100 text-amber-900 border-amber-200 hover:bg-amber-200"
-                >
-                  <Edit2 className="w-5 h-5" />
-                  編集
-                </Button>
-                <Button
-                  onClick={handleDelete}
-                  disabled={isLoading}
-                  variant="outline"
-                  className="flex-1 bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-200"
-                >
-                  <Trash2 className="w-5 h-5" />
-                  削除
-                </Button>
-              </div>
+              {cafeDiaryData.user.id === currentUser?.id && (
+                <div className="flex gap-3 pt-4 border-t border-amber-100">
+                  <Button
+                    onClick={() => setIsEditing(true)}
+                    variant="outline"
+                    className="flex-1 bg-amber-100 text-amber-900 border-amber-200 hover:bg-amber-200"
+                  >
+                    <Edit2 className="w-5 h-5" />
+                    編集
+                  </Button>
+                  <Button
+                    onClick={handleDelete}
+                    disabled={isLoading}
+                    variant="outline"
+                    className="flex-1 bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-200"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                    削除
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>

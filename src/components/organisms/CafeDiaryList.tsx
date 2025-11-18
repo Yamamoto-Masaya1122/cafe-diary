@@ -61,8 +61,10 @@ const CafeDiaryList = () => {
   // カフェ日記を更新
   const handleUpdateDiary = async (data: CafeDiaryWithUser) => {
     try {
-      const updatedCafeDiary = await apiClient.updateCafeDiary(data);
-      setCafeDiaries((prev) => prev.map((diary) => (diary.id === data.id ? updatedCafeDiary : diary)));
+      await apiClient.updateCafeDiary(data);
+      // 更新後にリストを再取得
+      const cafeDiaries = await apiClient.getCafeDiaries();
+      setCafeDiaries(cafeDiaries);
       setIsDetailOpen(false);
     } catch (error) {
       console.error("Error updating cafe diary:", error);

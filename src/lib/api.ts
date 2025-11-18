@@ -1,5 +1,5 @@
 import { UserFormData, LoginFormData } from "@/types/user";
-import { CafeDiaryData, CafeDiaryWithUser } from "@/types/cafe-diary";
+import { CafeDiaryWithUser } from "@/types/cafe-diary";
 
 const API_BASE_URL = "/api";
 
