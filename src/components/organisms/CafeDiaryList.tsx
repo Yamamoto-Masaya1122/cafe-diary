@@ -47,9 +47,10 @@ const CafeDiaryList = () => {
   // カフェ日記を作成
   const handleFormSubmit = async (data: CafeDiaryWithUser) => {
     try {
-      const cafeDiary = await apiClient.createCafeDiary(data);
-      // 新しいカフェ日記をリストに追加
-      setCafeDiaries((prev) => [cafeDiary, ...prev]);
+      await apiClient.createCafeDiary(data);
+      // 作成後にリストを再取得
+      const cafeDiaries = await apiClient.getCafeDiaries();
+      setCafeDiaries(cafeDiaries);
       setIsFormOpen(false);
       toast.success("カフェ日記を作成しました");
     } catch (error) {
