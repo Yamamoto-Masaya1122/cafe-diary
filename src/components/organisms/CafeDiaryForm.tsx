@@ -7,7 +7,7 @@ import * as z from "zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { requestCafeDiaryData } from "@/types/cafe-diary";
+import { CafeDiaryWithUser } from "@/types/cafe-diary";
 import { cafeDiaryValidation } from "@/validations/cafe-diary-validation";
 import { CafeDiaryFormFields } from "@/components/molecules/CafeDiaryFormFields";
 
@@ -16,7 +16,7 @@ type CafeDiaryFormData = z.infer<typeof cafeDiaryValidation>;
 interface CafeDiaryFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: requestCafeDiaryData) => Promise<void> | void;
+  onSubmit: (data: CafeDiaryWithUser) => Promise<void> | void;
 }
 
 const CafeDiaryForm: React.FC<CafeDiaryFormProps> = ({ open, onOpenChange, onSubmit }) => {
@@ -25,6 +25,8 @@ const CafeDiaryForm: React.FC<CafeDiaryFormProps> = ({ open, onOpenChange, onSub
   const form = useForm<CafeDiaryFormData>({
     resolver: zodResolver(cafeDiaryValidation),
     defaultValues: {
+      id: "",
+      userId: "",
       name: "",
       location: "",
       visitDate: new Date().toISOString().split("T")[0],
@@ -36,7 +38,7 @@ const CafeDiaryForm: React.FC<CafeDiaryFormProps> = ({ open, onOpenChange, onSub
   const handleSubmit = form.handleSubmit(async (data) => {
     try {
       setIsLoading(true);
-      await onSubmit(data);
+      await onSubmit({ ...data, user: { id: "", name: "", email: "" } });
       form.reset();
       onOpenChange(false);
     } finally {

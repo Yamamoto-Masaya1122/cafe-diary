@@ -1,5 +1,5 @@
 import { UserFormData, LoginFormData } from "@/types/user";
-import { CafeDiaryData, requestCafeDiaryData } from "@/types/cafe-diary";
+import { CafeDiaryWithUser } from "@/types/cafe-diary";
 
 const API_BASE_URL = "/api";
 
@@ -101,14 +101,14 @@ class ApiClient {
     }
   }
 
-  async createCafeDiary(cafeDiaryData: requestCafeDiaryData): Promise<CafeDiaryData> {
+  async createCafeDiary(cafeDiaryData: CafeDiaryWithUser): Promise<CafeDiaryWithUser> {
     try {
       const token = this.getAuthToken();
       if (!token) {
         throw new Error("ログイン情報が見つかりません");
       }
 
-      const response = await fetch(`${this.baseUrl}/cafe-diaries`, {
+      const response = await fetch(`${this.baseUrl}/cafe-diary`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +120,7 @@ class ApiClient {
         const data = await response.json();
         throw new Error(data.message || "カフェ日記を作成できませんでした");
       }
-      const data: CafeDiaryData = await response.json();
+      const data: CafeDiaryWithUser = await response.json();
       return data;
     } catch (error) {
       console.error(error);
@@ -128,14 +128,14 @@ class ApiClient {
     }
   }
 
-  async getCafeDiaries(): Promise<CafeDiaryData[]> {
+  async getCafeDiaries(): Promise<CafeDiaryWithUser[]> {
     try {
       const token = this.getAuthToken();
       if (!token) {
         throw new Error("ログイン情報が見つかりません");
       }
 
-      const response = await fetch(`${this.baseUrl}/cafe-diaries`, {
+      const response = await fetch(`${this.baseUrl}/cafe-diary`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -146,7 +146,34 @@ class ApiClient {
         throw new Error(data.message || "カフェ日記を取得できませんでした");
       }
 
-      const data: CafeDiaryData[] = await response.json();
+      const data: CafeDiaryWithUser[] = await response.json();
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async updateCafeDiary(cafeDiaryData: CafeDiaryWithUser): Promise<CafeDiaryWithUser> {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error("ログイン情報が見つかりません");
+      }
+      const response = await fetch(`${this.baseUrl}/cafe-diary/${cafeDiaryData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(cafeDiaryData),
+      });
+      if (!response.ok) {
+        console.log("エラーが発生しました", response);
+        const data = await response.json();
+        throw new Error(data.message || "カフェ日記を更新できませんでした");
+      }
+      const data: CafeDiaryWithUser = await response.json();
       return data;
     } catch (error) {
       console.error(error);

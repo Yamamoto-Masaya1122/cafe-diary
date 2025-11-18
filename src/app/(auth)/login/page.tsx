@@ -64,7 +64,6 @@ const LoginPage = () => {
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
                         <Input
                           type="email"
-                          placeholder="your@email.com"
                           className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
                           {...field}
                         />
@@ -86,7 +85,6 @@ const LoginPage = () => {
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 pointer-events-none" />
                         <Input
                           type="password"
-                          placeholder="••••••••"
                           className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
                           {...field}
                         />

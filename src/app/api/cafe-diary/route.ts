@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import prisma from "@/lib/db";
 import { cafeDiaryValidation } from "@/validations/cafe-diary-validation";
+import { CafeDiaryWithUser } from "@/types/cafe-diary";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
@@ -21,21 +22,38 @@ const authenticate = (request: NextRequest) => {
 
 export async function GET(request: NextRequest) {
   try {
-    const payload = authenticate(request);
-
     const diaries = await prisma.cafeDiary.findMany({
-      where: { userId: payload.userId },
+      where: {},
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
       orderBy: { visitDate: "desc" },
     });
 
+    // visitDateをISO形式に変換
+    const convertedDiaries = diaries.map((diary) => {
+      return {
+        ...diary,
+        visitDate: diary.visitDate.toISOString(),
+      };
+    });
+
     return NextResponse.json(
-      diaries.map((diary) => ({
+      convertedDiaries.map((diary: CafeDiaryWithUser) => ({
         id: diary.id,
         name: diary.name,
         location: diary.location,
-        visitDate: diary.visitDate.toISOString().split("T")[0],
+        visitDate: diary.visitDate,
         rating: diary.rating,
         notes: diary.notes,
+        userId: diary.userId,
+        user: diary.user,
       }))
     );
   } catch (error) {
@@ -74,6 +92,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         id: created.id,
+        userId: created.userId,
         name: created.name,
         location: created.location,
         visitDate: created.visitDate.toISOString().split("T")[0],

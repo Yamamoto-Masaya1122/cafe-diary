@@ -1,10 +1,12 @@
 import React from "react";
-import { MapPin, Star, Calendar } from "lucide-react";
+import { MapPin, Star, Calendar, User } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { AuthUser } from "@/types/user";
 
 interface CafeDiaryCardProps {
   id: string;
   name: string;
+  user: AuthUser;
   location?: string;
   notes?: string;
   rating: number;
@@ -16,6 +18,7 @@ export const CafeDiaryCard: React.FC<CafeDiaryCardProps> = ({
   id,
   name,
   location,
+  user,
   notes,
   rating,
   visitDate,
@@ -45,7 +48,7 @@ export const CafeDiaryCard: React.FC<CafeDiaryCardProps> = ({
             <Star key={i} className={`w-4 h-4 ${i < rating ? "fill-amber-400 text-amber-400" : "text-amber-200"}`} />
           ))}
         </div>
-        <div className="flex flex-wrap gap-3 text-sm mt-3 text-amber-700">
+        <div className="flex flex-col gap-3 text-sm mt-4 text-amber-700 lg:flex-row lg:flex-wrap lg:gap-3">
           {location && (
             <div className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
@@ -55,6 +58,10 @@ export const CafeDiaryCard: React.FC<CafeDiaryCardProps> = ({
           <div className="flex items-center gap-1">
             <Calendar className="w-4 h-4" />
             <span>{formatDate(visitDate)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <User className="w-4 h-4" />
+            <span>{user.name}</span>
           </div>
         </div>
         {notes && <p className="mt-3 text-amber-600 text-sm line-clamp-1">{notes}</p>}

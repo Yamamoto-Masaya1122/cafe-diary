@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Star, MapPin, Calendar, Edit2, Trash2 } from "lucide-react";
+import { Star, MapPin, Calendar, Edit2, Trash2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CafeDiaryData } from "@/types/cafe-diary";
+import { CafeDiaryWithUser } from "@/types/cafe-diary";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -10,22 +10,25 @@ import { cafeDiaryValidation } from "@/validations/cafe-diary-validation";
 import { z } from "zod";
 import { toast } from "sonner";
 import { CafeDiaryFormFields } from "@/components/molecules/CafeDiaryFormFields";
+import { AuthUserContext } from "@/components/provider/AuthUserProvider";
+import { useContext } from "react";
 
 type CafeDiaryFormData = z.infer<typeof cafeDiaryValidation>;
 
 interface CafeDiaryDetailModalProps {
-  cafeDiary: CafeDiaryData;
+  cafeDiary: CafeDiaryWithUser;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: CafeDiaryData) => void;
+  onSubmit: (data: CafeDiaryWithUser) => void;
   onDelete?: (id: string) => void;
 }
 
 const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDelete }: CafeDiaryDetailModalProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [cafeDiaryData, setCafeDiaryData] = useState(cafeDiary);
+  const [cafeDiaryData, setCafeDiaryData] = useState<CafeDiaryWithUser>(cafeDiary);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [currentUser] = useContext(AuthUserContext);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -52,10 +55,10 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
     if (!onSubmit) return;
     setIsLoading(true);
     try {
-      onSubmit({ ...data, id: cafeDiaryData.id });
+      onSubmit({ ...data, id: cafeDiaryData.id, userId: cafeDiaryData.userId, user: cafeDiaryData.user });
 
       // ローカル状態も更新
-      setCafeDiaryData({ ...data, id: cafeDiaryData.id });
+      setCafeDiaryData({ ...data, id: cafeDiaryData.id, userId: cafeDiaryData.userId, user: cafeDiaryData.user });
       setIsEditing(false);
       toast.success("日記を更新しました");
     } catch (err: unknown) {
@@ -149,6 +152,10 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
                   <Calendar className="w-5 h-5 mt-0.5 shrink-0" />
                   <span>{formatDate(cafeDiaryData.visitDate)}</span>
                 </div>
+                <div className="flex items-start gap-3 text-amber-700">
+                  <User className="w-5 h-5 mt-0.5 shrink-0" />
+                  <span>{cafeDiaryData.user.name}</span>
+                </div>
 
                 {cafeDiaryData.notes && (
                   <div className="bg-amber-50 px-4 py-3 rounded-xl">
@@ -164,25 +171,27 @@ const CafeDiaryDetailModal = ({ cafeDiary, isOpen, onOpenChange, onSubmit, onDel
                 </div>
               )}
 
-              <div className="flex gap-3 pt-4 border-t border-amber-100">
-                <Button
-                  onClick={() => setIsEditing(true)}
-                  variant="outline"
-                  className="flex-1 bg-amber-100 text-amber-900 border-amber-200 hover:bg-amber-200"
-                >
-                  <Edit2 className="w-5 h-5" />
-                  編集
-                </Button>
-                <Button
-                  onClick={handleDelete}
-                  disabled={isLoading}
-                  variant="outline"
-                  className="flex-1 bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-200"
-                >
-                  <Trash2 className="w-5 h-5" />
-                  削除
-                </Button>
-              </div>
+              {cafeDiaryData.user.id === currentUser?.id && (
+                <div className="flex gap-3 pt-4 border-t border-amber-100">
+                  <Button
+                    onClick={() => setIsEditing(true)}
+                    variant="outline"
+                    className="flex-1 bg-amber-100 text-amber-900 border-amber-200 hover:bg-amber-200"
+                  >
+                    <Edit2 className="w-5 h-5" />
+                    編集
+                  </Button>
+                  <Button
+                    onClick={handleDelete}
+                    disabled={isLoading}
+                    variant="outline"
+                    className="flex-1 bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-200"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                    削除
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
