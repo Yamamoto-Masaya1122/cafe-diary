@@ -180,6 +180,28 @@ class ApiClient {
       throw error;
     }
   }
+
+  async deleteCafeDiary(id: string): Promise<void> {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error("ログイン情報が見つかりません");
+      }
+      const response = await fetch(`${this.baseUrl}/cafe-diary/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("カフェ日記を削除できませんでした");
+      }
+      return response.json();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 }
 
 export const apiClient = new ApiClient();

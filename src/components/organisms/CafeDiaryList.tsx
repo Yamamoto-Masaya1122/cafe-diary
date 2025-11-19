@@ -73,11 +73,17 @@ const CafeDiaryList = () => {
     }
   };
 
-  const handleDeleteDiary = (id: string) => {
+  const handleDeleteDiary = async (id: string) => {
     // カフェ日記を削除
-    setCafeDiaries((prev) => prev.filter((diary) => diary.id !== id));
-    setIsDetailOpen(false);
-    setSelectedCafe(null);
+    try {
+      await apiClient.deleteCafeDiary(id);
+      const cafeDiaries = await apiClient.getCafeDiaries();
+      setCafeDiaries(cafeDiaries);
+      setIsDetailOpen(false);
+    } catch (error) {
+      console.error("Error deleting cafe diary:", error);
+      toast.error("カフェ日記を削除できませんでした");
+    }
   };
 
   return (
