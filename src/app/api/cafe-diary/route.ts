@@ -20,10 +20,12 @@ const authenticate = (request: NextRequest) => {
   }
 };
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const diaries = await prisma.cafeDiary.findMany({
-      where: {},
+      where: {
+        deletedAt: null,
+      },
       include: {
         user: {
           select: {
