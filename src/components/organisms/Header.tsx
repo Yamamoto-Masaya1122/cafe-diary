@@ -19,8 +19,13 @@ const Header = () => {
 
   useEffect(() => {
     // ログイン状態を確認
-    const token = localStorage.getItem("authToken");
-    setIsLoggedIn(!!token);
+    const userData = sessionStorage.getItem("userData");
+    if (!userData) {
+      setIsLoggedIn(false);
+      return;
+    }
+    const parsed = JSON.parse(userData);
+    setIsLoggedIn(!!parsed?.token && !!parsed?.user);
   }, []);
 
   const toggleMenu = () => {
