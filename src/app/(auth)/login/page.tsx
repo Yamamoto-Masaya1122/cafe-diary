@@ -66,6 +66,7 @@ const LoginPage = () => {
                           type="email"
                           className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
                           {...field}
+                          placeholder="メールアドレスを入力してください"
                         />
                       </div>
                     </FormControl>
@@ -87,6 +88,7 @@ const LoginPage = () => {
                           type="password"
                           className="w-full pl-11 pr-4 py-3 bg-white border-amber-200 focus:ring-amber-400 text-amber-900 placeholder-amber-300"
                           {...field}
+                          placeholder="パスワードを入力してください"
                         />
                       </div>
                     </FormControl>
