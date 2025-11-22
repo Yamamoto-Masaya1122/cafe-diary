@@ -83,16 +83,21 @@ class ApiClient {
 
   async logout() {
     try {
-      // ログイン情報をセッションから削除
-      sessionStorage.removeItem("userData");
-
       // サーバー側のログアウトAPIを呼ぶ
-      await fetch("/api/logout", {
+      const response = await fetch("/api/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
       });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "ログアウトに失敗しました");
+      }
+
+      // サーバー側の処理が成功したら、ログイン情報をセッションから削除
+      sessionStorage.removeItem("userData");
 
       return { success: true };
     } catch (error) {
