@@ -12,13 +12,13 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Coffee, Mail, Lock, User } from "lucide-react";
 
-type RegisterFormData = z.infer<typeof registerUserValidation>;
+type UserRegisterFormData = z.infer<typeof registerUserValidation>;
 
-const RegisterForm = () => {
+const UserRegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const form = useForm<RegisterFormData>({
+  const form = useForm<UserRegisterFormData>({
     resolver: zodResolver(registerUserValidation),
     defaultValues: {
       name: "",
@@ -28,7 +28,7 @@ const RegisterForm = () => {
     },
   });
 
-  const handleSubmit = async (data: RegisterFormData) => {
+  const handleSubmit = async (data: UserRegisterFormData) => {
     setLoading(true);
 
     try {
@@ -167,4 +167,4 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default UserRegisterForm;
