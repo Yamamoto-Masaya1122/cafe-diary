@@ -95,14 +95,6 @@ const CafeDiaryList = () => {
         </div>
       ) : (
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-3">
-              <div>
-                <p className="text-sm text-amber-600">{cafeDiaries.length}件のカフェ日記を記録</p>
-              </div>
-            </div>
-          </div>
-
           {cafeDiaries.length === 0 ? (
             <div className="text-center py-16">
               <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-12 border border-amber-100">
