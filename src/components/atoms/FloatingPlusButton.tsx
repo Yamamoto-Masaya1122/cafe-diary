@@ -3,14 +3,12 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface CreateCafeDiaryFloatingButtonProps {
+interface FloatingPlusButtonProps {
   onClick?: () => void;
   className?: string;
 }
 
-export const CreateCafeDiaryFloatingButton: React.FC<
-  CreateCafeDiaryFloatingButtonProps
-> = ({ onClick, className }) => {
+export const FloatingPlusButton: React.FC<FloatingPlusButtonProps> = ({ onClick, className }) => {
   return (
     <Button
       onClick={onClick}

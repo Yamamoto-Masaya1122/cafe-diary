@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Coffee, Plus, Loader2 } from "lucide-react";
 import { CafeDiaryCard } from "@/components/molecules/CafeDiaryCard";
-import { CreateCafeDiaryFloatingButton } from "@/components/atoms/CafeDiaryFloatingButton";
+import { FloatingPlusButton } from "@/components/atoms/FloatingPlusButton";
 import { Button } from "@/components/atoms/Button";
 import CafeDiaryForm from "@/components/organisms/CafeDiaryForm";
 import { CafeDiaryWithUser } from "@/types/cafe-diary";
@@ -126,7 +126,7 @@ const CafeDiaryList = () => {
                   <CafeDiaryCard key={cafeDiary.id} {...cafeDiary} onClick={handleCardClick} />
                 ))}
               </div>
-              <CreateCafeDiaryFloatingButton onClick={handleCreateDiary} />
+              <FloatingPlusButton onClick={handleCreateDiary} />
             </>
           )}
 
