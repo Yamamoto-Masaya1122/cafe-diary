@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import RegisterForm from "@/components/molecules/RegisterForm";
+import UserRegisterForm from "@/components/molecules/UserRegisterForm";
 
 // メタデータを生成
 export async function generateMetadata(): Promise<Metadata> {
@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const RegisterPage = () => {
-  return <RegisterForm />;
+  return <UserRegisterForm />;
 };
 
 export default RegisterPage;
