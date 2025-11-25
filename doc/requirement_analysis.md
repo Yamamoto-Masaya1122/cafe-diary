@@ -39,6 +39,7 @@ SNSのように公開するのではなく、“自分のカフェ体験を整�
 * TypeScript 5.9.3
 * Next.js 15.5.6（App Router想定）
 * UIライブラリ：shadcn/ui（Tailwind CSSベース）
+* PWA対応（ホーム画面追加・アプリアイコン表示・アプリのような起動）
 
 ### バックエンド
 * Next.js API Routes（BFF兼用のバックエンドAPI）
