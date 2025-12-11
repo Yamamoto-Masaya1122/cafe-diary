@@ -16,18 +16,43 @@ alwaysApply: true
 
 ## 🧱 Atomic Design 厳守ルール
 
-### 階層構造
-- `components/1_atoms/`: Button, Input, Label など最小単位
-- `components/2_molecules/`: Form, Card, SearchBox など機能単位
-- `components/3_organisms/`: Header, Sidebar, DataTable など自立したセクション
-- `components/ui/`: shadcn/ui コンポーネント
-- `components/providers/`: Context Providers
+### 📁 コンポーネント階層構造
 
-### 必須遵守事項
-1. **app/配下での直接UI記述禁止**: ページファイルには複雑なJSXを記述しない
-2. **コンポーネント分離**: すべてのUIは適切な階層のコンポーネントとして実装
-3. **既存コンポーネント優先**: 新規作成前に既存の拡張を検討
-4. **単一責任原則**: 各コンポーネントは明確な責務を持つ
+| ディレクトリ | 用途 / 特徴 | 例 |
+|--------------|------------|----|
+| components/1_atoms/ | プロジェクト全体で共通利用される最小単位 | Button / Input / Label / Icon |
+| components/2_molecules/ | 複数Atomを組み合わせた汎用UI | SearchBox / FilterBox / DateInput |
+| components/3_organisms/ | 複数Moleculeを組み合わせた再利用可能UI | UserForm / Modal / Pagination |
+| components/ui/ | shadcn/uiベースの汎用UIパーツ | Dialog / Select / Sheet |
+| components/providers/ | Context Providers | ThemeProvider / AuthProvider |
+| app/<feature>/components/ | ドメイン固有・画面専用のUIコンポーネント | ShopCard / CafeDiaryForm / AdminShopTable |
+
+---
+
+### 📌 コンポーネントの配置基準
+
+| 判断基準 | 配置場所 |
+|----------|----------|
+| 複数の画面・複数ドメインで再利用できる | `src/components/**` |
+| Shop / CafeDiary / User など、特定機能専用UI | `app/<feature>/components/**` |
+| Prismaの型やドメインロジックに依存する | `app/<feature>/components/**` |
+| UIだけでなくバリデーションやドメイン処理も含む | `app/<feature>/components/**` |
+
+---
+
+### 🚫 禁止事項
+
+❌ `src/components` にドメイン固有コンポーネントを配置しない  
+❌ `app/配下` に Atoms / Molecules / Organisms の汎用UIを定義しない  
+❌ Prismaの型・APIロジックを汎用コンポーネント内に持ち込まない  
+❌ 名前に `Shop`, `CafeDiary`, `Admin` などのドメイン名を含むものを `src/components` に配置しない  
+
+---
+
+### 🔍 配置判断フロー
+このコンポーネントは、他の画面や他機能でも使える？
+├─ YES → src/components に配置
+└─ NO → app/<feature>/components に配置
 
 ## TypeScript ルール
 
