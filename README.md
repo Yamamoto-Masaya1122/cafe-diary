@@ -5,6 +5,7 @@
 
    ```env
    DATABASE_URL="postgresql://postgres:postgres@db:5432/cafe_diary?schema=public"
+   JWT_SECRET=your-secret-key
    ```
 
 2. コンテナを起動します。
@@ -29,9 +30,14 @@
    docker compose up studio
    ```
 
+5. ダミーデータを追加したい場合は以下を実行します。
+
+   ```bash
+   docker compose exec app npx prisma db seed
+   ```
+
 ### ローカルで直接実行する場合
 
 ```bash
 npm run dev
 ```
-
